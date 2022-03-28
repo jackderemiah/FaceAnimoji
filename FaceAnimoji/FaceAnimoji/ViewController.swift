@@ -30,11 +30,19 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         sceneView.showsStatistics = true
         
         // Create a new scene
-        let scene = SCNScene(named: "art.scnassets/facial-setup-final.scn")!
-
+     let scene = SCNScene(named: "art.scnassets/facial-setup-final.scn")!
+     
         // Access scene's rootNode
         contentNode = scene.rootNode
-
+        contentNode?.opacity = 0.89
+        
+       
+        print("content node orientation : \(contentNode?.orientation)")
+        print("content node euler angles : \(contentNode?.eulerAngles)")
+        
+        
+        print("content node = \(contentNode)")
+        print("content node child  = \(contentNode?.childNodes)")
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -66,17 +74,17 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     
     func session(_ session: ARSession, didFailWithError error: Error) {
         // Present an error message to the user
-        
+    
     }
     
     func sessionWasInterrupted(_ session: ARSession) {
         // Inform the user that the session has been interrupted, for example, by presenting an overlay
-        
+        print("session was interrupted! ⏸")
     }
     
     func sessionInterruptionEnded(_ session: ARSession) {
         // Reset tracking and/or remove existing anchors if consistent tracking is required
-        
+        print("resuming session! ▶️")
     }
     
     func renderer(_ renderer: SCNSceneRenderer, nodeFor anchor: ARAnchor) -> SCNNode? {
@@ -93,9 +101,16 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         DispatchQueue.main.async {
             let blendShapes = faceAnchor.blendShapes
             
-            // This will only work correctly if the shape keys are given the exact same name as the blendshape names
+            // Looping through blendshapes.
+            // setting the content node with the same values for each blendshape key! ( setWeight ).
+            
             for (key, value) in blendShapes {
-                if let fValue = value as? Float{                    self.contentNode?.childNodes[0].morpher?.setWeight(CGFloat(fValue), forTargetNamed: key.rawValue)
+                
+                if let faceValue = value as? Float{
+                    
+                    self.contentNode?.childNodes[0].morpher?.setWeight(CGFloat( faceValue ), forTargetNamed: key.rawValue)
+                                  
+                    
                 }
             }
         }
